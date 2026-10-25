@@ -28,25 +28,27 @@ GAME_ENABLE_GM
 
 ## 安装
 
-本包只依赖 Unity 引擎，不依赖 Input System。键盘和鼠标与 FinalIK 的 `CameraController` 相同：定义了 `ENABLE_LEGACY_INPUT_MANAGER` 时用旧的 `UnityEngine.Input`，Player Settings 选 Both 时也走这条路径。只有关掉旧输入、单独启用 Input System 时，才编译 `UnityEngine.InputSystem`。
+### 一、方式一
 
-### 嵌入 Packages 目录
+通过 Package Manager 的 **Add package from git URL** 添加，填写下面的 URL：
 
-把本目录放到项目的 `Packages/org.avalon712.gm`。Unity 会把它当作嵌入式包自动加载。
-
-### manifest.json
-
-在 `Packages/manifest.json` 的 `dependencies` 里写本地路径：
-
-```json
-{
-  "dependencies": {
-    "org.avalon712.gm": "file:../path/to/org.avalon712.gm"
-  }
-}
+```text
+https://github.com/Avalon712/GM.git#v1.0.0
 ```
 
-路径按你机器上的实际位置修改。
+### 二、方式二
+
+下载 v1.0.0 到本地，然后通过 Package Manager 的 **Add package from disk**，选中该目录下的 `package.json`。
+
+### 三、方式三
+
+在项目的 `Packages` 目录下创建一个子目录，名称取 **org.avalon712.gm@1.0.0**，把 v1.0.0 的内容放进这个目录。Unity 会识别其中的 `package.json`，并把包加入项目。
+
+### 四、安装需要注意的一些事项
+
+本包只依赖 Unity 引擎，不依赖 Input System，也不依赖其他包。键盘和鼠标与 FinalIK 的 `CameraController` 相同：定义了 `ENABLE_LEGACY_INPUT_MANAGER` 时用旧的 `UnityEngine.Input`，Player Settings 选 Both 时也走这条路径。只有关掉旧输入、单独启用 Input System 时，才编译 `UnityEngine.InputSystem`。这种情况下 `GM.Runtime` 是独立程序集，需要在 `Runtime/GM.Runtime.asmdef` 的 `references` 里加上 `Unity.InputSystem`。
+
+安装完成后，还要按上一节给当前平台加上脚本宏 `GAME_ENABLE_GM`，否则运行时程序集不参与编译。
 
 ---
 
