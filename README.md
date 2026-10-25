@@ -5,24 +5,6 @@
 - **Unity**：2022.3+
 - **命名空间**：`UniGM`
 
-没有脚本宏 `GAME_ENABLE_GM` 时，整个运行时程序集不参与编译。
-
----
-
-## 启用
-
-在 `Edit` → `Project Settings` → `Player` → `Other Settings` → **Scripting Define Symbols** 中，给当前构建平台加上：
-
-```text
-GAME_ENABLE_GM
-```
-
-这个开关写在 `Runtime/GM.Runtime.asmdef` 的 `defineConstraints` 里。没有这个宏时，整个 `GM.Runtime` 程序集不参与编译，窗口、命令和日志挂钩都不会进包体。`Assets/Scripts/Runtime/GM` 里的示例还在文件开头用 `#if GAME_ENABLE_GM` 包了一层，因为它们属于游戏程序集，不受这个 asmdef 约束。
-
-宏必须加在**正在使用的那个平台**上（编辑器 Play 用的是当前 Build Target 对应的一组符号）。
-
-业务代码如果直接引用 `UniGM`，同样包在 `#if GAME_ENABLE_GM` 里，避免宏关闭后编译失败。
-
 ---
 
 ## 安装
@@ -46,8 +28,6 @@ https://github.com/Avalon712/GM.git
 ### 四、安装需要注意的一些事项
 
 本包只依赖 Unity 引擎，不依赖 Input System，也不依赖其他包。键盘和鼠标与 FinalIK 的 `CameraController` 相同：定义了 `ENABLE_LEGACY_INPUT_MANAGER` 时用旧的 `UnityEngine.Input`，Player Settings 选 Both 时也走这条路径。只有关掉旧输入、单独启用 Input System 时，才编译 `UnityEngine.InputSystem`。这种情况下 `GM.Runtime` 是独立程序集，需要在 `Runtime/GM.Runtime.asmdef` 的 `references` 里加上 `Unity.InputSystem`。
-
-安装完成后，还要按上一节给当前平台加上脚本宏 `GAME_ENABLE_GM`，否则运行时程序集不参与编译。
 
 ---
 
@@ -259,7 +239,7 @@ GM.Unregister<GmSampleTeam>();
 ## 常见问题
 
 **Q: Play 之后没有 GM 按钮？**  
-A: 先确认启动流程调用了 `GM.Initialize()`。再确认当前平台的 Scripting Define Symbols 里有 `GAME_ENABLE_GM`，然后让 Unity 重新编译。宏不在时，`GM.Runtime` 程序集不会被编译。
+A: 确认启动流程调用了 `GM.Initialize()`。
 
 **Q: 参数一直解析失败？**  
 A: 输入 `help arg` 看写法。字符串必须是英文双引号；整数向量是 `i(1,2)` 这种形式，不是 `(1,2)`。
@@ -270,8 +250,8 @@ A: `1.5` 会解析成 `float`，而示例命令 `add` 只要两个 `int`。无�
 **Q: 命令执行了但 GM 页是空的？**  
 A: 输出请用 `GM.Print`。`Debug.Log` 在 Console 页。
 
-**Q: 怎么关掉发布包里的 GM？**  
-A: 从对应平台删掉 `GAME_ENABLE_GM` 后重新打。
+**Q: 怎么让发布包里不出现 GM 窗口？**  
+A: 发布用的启动流程不要调用 `GM.Initialize()`。不调用就不会创建窗口，也不会订阅 `Debug` 日志。
 
 ---
 
