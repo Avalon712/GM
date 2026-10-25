@@ -1,0 +1,20 @@
+{
+  "name": "org.avalon712.gm",
+  "displayName": "GM",
+  "version": "1.0.0",
+  "unity": "2022.3",
+  "description": "运行时 GM 管理器：独立的 Debug 控制台，以及可注册命令和可扩展参数解析。",
+  "author": {
+    "name": "Avalon712",
+    "email": "2947897147@qq.com"
+  },
+  "keywords": [
+    "GM",
+    "Console",
+    "Debug",
+    "IMGUI"
+  ],
+  "license": "MIT",
+  "category": "Scripting",
+  "dependencies": {}
+}
