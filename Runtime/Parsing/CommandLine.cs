@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 
-namespace Game.GM
+namespace UniGM
 {
     /// <summary>
     /// 把一行命令拆成命令名和参数文本。引号和括号内部的空格不会被切开。

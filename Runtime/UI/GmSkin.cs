@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace Game.GM
+namespace UniGM
 {
     internal sealed class GmSkin
     {

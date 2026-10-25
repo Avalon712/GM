@@ -1,7 +1,7 @@
 using System.Text.RegularExpressions;
 using UnityEngine;
 
-namespace Game.GM
+namespace UniGM
 {
     internal sealed class Vector2ArgParser : ArgParser<Vector2>
     {

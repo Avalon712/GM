@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
 
-namespace Game.GM
+namespace UniGM
 {
     /// <summary>
     /// GM 命令和参数解析器的注册入口。命令输出走 <see cref="Print"/>，只出现在 GM 控制台。

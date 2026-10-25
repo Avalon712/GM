@@ -3,7 +3,7 @@ using UnityEngine.InputSystem;
 #endif
 using UnityEngine;
 
-namespace Game.GM
+namespace UniGM
 {
     /// <summary>
     /// 键盘和鼠标状态。有旧输入系统时用 <c>UnityEngine.Input</c>，只有关掉旧输入时才用 Input System。

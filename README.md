@@ -3,8 +3,7 @@
 运行时 GM 管理器。在游戏里用 Unity 遗产 GUI（IMGUI）查看 Debug 输出，并执行已注册的 GM 命令。Debug 日志和命令输出分开展示。
 
 - **Unity**：2022.3+
-- **版本**：1.0.0
-- **命名空间**：`Game.GM`
+- **命名空间**：`UniGM`
 
 没有脚本宏 `GAME_ENABLE_GM` 时，整个运行时程序集不参与编译。
 
@@ -22,7 +21,7 @@ GAME_ENABLE_GM
 
 宏必须加在**正在使用的那个平台**上（编辑器 Play 用的是当前 Build Target 对应的一组符号）。
 
-业务代码如果直接引用 `Game.GM`，同样包在 `#if GAME_ENABLE_GM` 里，避免宏关闭后编译失败。
+业务代码如果直接引用 `UniGM`，同样包在 `#if GAME_ENABLE_GM` 里，避免宏关闭后编译失败。
 
 ---
 
@@ -33,16 +32,16 @@ GAME_ENABLE_GM
 通过 Package Manager 的 **Add package from git URL** 添加，填写下面的 URL：
 
 ```text
-https://github.com/Avalon712/GM.git#v1.0.0
+https://github.com/Avalon712/GM.git
 ```
 
 ### 二、方式二
 
-下载 v1.0.0 到本地，然后通过 Package Manager 的 **Add package from disk**，选中该目录下的 `package.json`。
+把仓库下载到本地，然后通过 Package Manager 的 **Add package from disk**，选中该目录下的 `package.json`。
 
 ### 三、方式三
 
-在项目的 `Packages` 目录下创建一个子目录，名称取 **org.avalon712.gm@1.0.0**，把 v1.0.0 的内容放进这个目录。Unity 会识别其中的 `package.json`，并把包加入项目。
+在项目的 `Packages` 目录下创建一个子目录，名称取 **org.avalon712.gm**，把仓库内容放进这个目录。Unity 会识别其中的 `package.json`，并把包加入项目。
 
 ### 四、安装需要注意的一些事项
 
@@ -89,7 +88,7 @@ GM.Initialize();
 
 ```csharp
 using System.Collections.Generic;
-using Game.GM;
+using UniGM;
 using UnityEngine;
 
 public sealed class CubeCommand : GMCommand
@@ -195,7 +194,7 @@ cube (1,9,0) (0,89,0)
 ```csharp
 using System;
 using System.Text.RegularExpressions;
-using Game.GM;
+using UniGM;
 
 public enum GmSampleTeam
 {

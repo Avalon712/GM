@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace Game.GM
+namespace UniGM
 {
     /// <summary>
     /// 运行时 GM 窗口。Console 与 GM 命令使用各自的缓冲和输入。

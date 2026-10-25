@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using UnityEngine;
 
-namespace Game.GM
+namespace UniGM
 {
     internal sealed class DebugConsoleView
     {

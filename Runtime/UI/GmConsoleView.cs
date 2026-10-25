@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace Game.GM
+namespace UniGM
 {
     internal sealed class GmConsoleView
     {

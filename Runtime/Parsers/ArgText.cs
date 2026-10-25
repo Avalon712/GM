@@ -2,7 +2,7 @@ using System.Globalization;
 using System.Text;
 using System.Text.RegularExpressions;
 
-namespace Game.GM
+namespace UniGM
 {
     internal static class ArgText
     {

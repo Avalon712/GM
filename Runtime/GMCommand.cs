@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 
-namespace Game.GM
+namespace UniGM
 {
     /// <summary>
     /// GM 命令基类。通过 <see cref="GM.Register(GMCommand)"/> 注册后，可在运行时命令行执行。

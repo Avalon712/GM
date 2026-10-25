@@ -2,7 +2,7 @@ using System;
 using UnityEngine;
 using UnityEngine.Profiling;
 
-namespace Game.GM
+namespace UniGM
 {
     /// <summary>
     /// 运行时性能页。每秒刷新平均帧率，并用最近一段帧时间计算 1% Low、0.1% Low 和内存。

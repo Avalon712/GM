@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace Game.GM
+namespace UniGM
 {
     /// <summary>
     /// 内置帮助命令。参数是关键字，不经过类型解析器。

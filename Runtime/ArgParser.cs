@@ -1,7 +1,7 @@
 using System;
 using System.Text.RegularExpressions;
 
-namespace Game.GM
+namespace UniGM
 {
     /// <summary>
     /// 已注册参数解析器的内部视图，供调度和 help 使用。

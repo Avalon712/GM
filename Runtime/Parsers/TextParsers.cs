@@ -1,7 +1,7 @@
 using System;
 using System.Text.RegularExpressions;
 
-namespace Game.GM
+namespace UniGM
 {
     internal sealed class BoolArgParser : ArgParser<bool>
     {

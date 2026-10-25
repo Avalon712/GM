@@ -2,7 +2,7 @@ using System;
 using System.Collections.Concurrent;
 using UnityEngine;
 
-namespace Game.GM
+namespace UniGM
 {
     internal sealed class GmLogEntry
     {

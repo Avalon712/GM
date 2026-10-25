@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace Game.GM
+namespace UniGM
 {
     internal enum GmLineKind
     {

@@ -1,6 +1,6 @@
 {
     "name": "GM.Runtime",
-    "rootNamespace": "Game.GM",
+    "rootNamespace": "UniGM",
     "references": [],
     "includePlatforms": [],
     "excludePlatforms": [],
