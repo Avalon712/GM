@@ -243,8 +243,13 @@ namespace UniGM
 
         private static void Destroy(Object asset)
         {
-            if (asset != null)
+            if (asset == null)
+                return;
+
+            if (Application.isPlaying)
                 Object.Destroy(asset);
+            else
+                Object.DestroyImmediate(asset);
         }
 
         private static Texture2D SolidTexture(Color color)
