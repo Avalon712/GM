@@ -17,6 +17,6 @@
   "license": "MIT",
   "category": "Scripting",
   "dependencies": {
-    "com.unity.inputsystem": "1.7.0"
+    "com.unity.inputsystem": "1.0.0"
   }
 }

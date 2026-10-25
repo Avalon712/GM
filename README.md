@@ -27,7 +27,7 @@ https://github.com/Avalon712/GM.git
 
 ### 四、安装需要注意的一些事项
 
-本包依赖 `com.unity.inputsystem` 1.7.0。`GM.Runtime` 引用了 `Unity.InputSystem`，Package Manager 会随本包一起装上。键盘和鼠标与 FinalIK 的 `CameraController` 相同：定义了 `ENABLE_LEGACY_INPUT_MANAGER` 时用旧的 `UnityEngine.Input`，Player Settings 选 Both 时也走这条路径。只有关掉旧输入、单独启用 Input System 时，才使用 `UnityEngine.InputSystem`。
+本包依赖 `com.unity.inputsystem` 1.0.0 及以上。项目里已经有更高版本时会继续用那个版本。`GM.Runtime` 引用了 `Unity.InputSystem`。键盘和鼠标与 FinalIK 的 `CameraController` 相同：定义了 `ENABLE_LEGACY_INPUT_MANAGER` 时用旧的 `UnityEngine.Input`，Player Settings 选 Both 时也走这条路径。只有关掉旧输入、单独启用 Input System 时，才使用 `UnityEngine.InputSystem`。
 
 ---
 
