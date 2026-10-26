@@ -30,6 +30,16 @@ namespace UniGM
         private float _usageTitle;
         private float _usageBody;
 
+        public GmConsoleView()
+        {
+            GmCommandHistoryFile.Read(_history);
+        }
+
+        public void SaveHistory()
+        {
+            GmCommandHistoryFile.Write(_history);
+        }
+
         public void Focus()
         {
             GUI.FocusControl(InputControl);
@@ -114,7 +124,7 @@ namespace UniGM
                 {
                     if (_history.Count == 0 || _history[_history.Count - 1] != line)
                         _history.Add(line);
-                    if (_history.Count > 50)
+                    if (_history.Count > GmCommandHistoryFile.Capacity)
                         _history.RemoveAt(0);
                     GM.Execute(line);
                 }

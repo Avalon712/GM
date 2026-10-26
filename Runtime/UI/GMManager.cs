@@ -93,6 +93,7 @@ namespace UniGM
             if (!owner)
                 return;
 
+            _command.SaveHistory();
             GmLogHub.Unsubscribe();
             GM.SetTyping(false);
         }

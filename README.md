@@ -53,7 +53,7 @@ GM.Initialize();
 | 页签 | 内容 |
 | --- | --- |
 | **Console** | `Debug.Log` / `LogWarning` / `LogError`。可按 Info、Warning、Error 过滤，正则搜索、折叠、清空。点击一行后，下方单独的面板显示完整内容和堆栈 |
-| **GM** | 命令行风格，和 Console 分开。命令回显、`GM.Print`、解析错误和异常都在这里。底部输入命令，Enter 执行，↑↓ 翻历史。还没有任何输出时，会显示 `help` 的用法 |
+| **GM** | 命令行风格，和 Console 分开。命令回显、`GM.Print`、解析错误和异常都在这里。底部输入命令，Enter 执行，↑↓ 翻历史。编辑器里会把命令历史写成 `persistentDataPath/UniGM/command-history.bin`，初始化时读回，退出 Play 时写回。还没有任何输出时，会显示 `help` 的用法 |
 | **性能** | 最近 1 秒的平均帧率、帧时间，以及最近 1000 帧的 1% Low、0.1% Low。同时显示总分配、总保留、Mono、图形驱动和托管内存 |
 
 命令想显示在 GM 页，调用 `GM.Print`。`Debug.Log` 只会进 Console 页。
