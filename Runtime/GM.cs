@@ -48,6 +48,16 @@ namespace UniGM
             GMManager.Ensure();
         }
 
+#if ENABLE_LEGACY_INPUT_MANAGER
+        /// <summary>
+        /// 旧输入系统可用时，用内置的 F1、鼠标左键、回车和小键盘回车打开 GM。
+        /// </summary>
+        public static void Initialize()
+        {
+            Initialize(new LegacyGmInput());
+        }
+#endif
+
         static GM()
         {
             RegisterBuiltins();

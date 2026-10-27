@@ -25,19 +25,25 @@ https://github.com/Avalon712/GM.git
 
 在项目的 `Packages` 目录下创建一个子目录，名称取 **org.avalon712.gm**，把仓库内容放进这个目录。Unity 会识别其中的 `package.json`，并把包加入项目。
 
-本包不依赖其他 Unity 包。按键和鼠标由游戏自己实现 `IGmInput`，在 `GM.Initialize` 时传入。
+本包不依赖其他 Unity 包。定义了 `ENABLE_LEGACY_INPUT_MANAGER` 时，可以直接调用无参的 `GM.Initialize()`，内部使用旧输入系统。没有旧输入时，这个无参方法不会参与编译，需要自己实现 `IGmInput` 再传入。
 
 ---
 
 ## 打开界面
 
-游戏启动时调用一次，并传入输入实现：
+游戏启动时调用一次。旧输入系统可用时：
+
+```csharp
+GM.Initialize();
+```
+
+只有 Input System 时，无参方法不存在，传入自己的 `IGmInput`：
 
 ```csharp
 GM.Initialize(new MyGmInput());
 ```
 
-`IGmInput` 的四个方法分别表示：打开或关闭窗口、拖动或缩放、回车提交、小键盘回车提交。返回值是该键是否正按住，`shortcutKeyName` 是界面上显示的键名。框架不访问 `UnityEngine.Input`，也不引用 Input System。下面是用旧输入系统写的一种实现：
+`IGmInput` 的四个方法分别表示：打开或关闭窗口、拖动或缩放、回车提交、小键盘回车提交。返回值是该键是否正按住，`shortcutKeyName` 是界面上显示的键名。框架不引用 Input System。下面是一种自己实现的写法：
 
 ```csharp
 using UniGM;
@@ -255,7 +261,7 @@ GM.Unregister<GmSampleTeam>();
 
 ## 本仓库里的用例
 
-`Assets/Scripts/Runtime/GM` 提供这些示例命令。本仓库在 `TestLuncher.Awake` 里调用 `GM.Initialize(new LegacyGmInput())` 和 `GMSampleRegister.Register()`。
+`Assets/Scripts/Runtime/GM` 提供这些示例命令。本仓库在 `TestLuncher.Awake` 里调用 `GM.Initialize()` 和 `GMSampleRegister.Register()`。
 
 | 命令 | 示例 |
 | --- | --- |
