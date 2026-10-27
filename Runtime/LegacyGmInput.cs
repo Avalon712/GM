@@ -22,7 +22,7 @@ namespace UniGM
         /// </summary>
         public bool GetDragOrResizeGMPointerTriggered(out string shortcutKeyName)
         {
-            shortcutKeyName = "Mouse0";
+            shortcutKeyName = "Left Mouse";
             return Input.GetMouseButton(0);
         }
 
