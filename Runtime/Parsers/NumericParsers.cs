@@ -9,7 +9,7 @@ namespace UniGM
 
         public override Regex Template => _template;
 
-        public override string Hint => "十进制整数，例如 42、-3、+8";
+        public override string Hint => "eg. 42, -3";
 
         public override bool TryParse(string arg, out object argObj)
         {
@@ -30,7 +30,7 @@ namespace UniGM
 
         public override Regex Template => _template;
 
-        public override string Hint => "无符号整数，后缀 u，例如 42u、+8u";
+        public override string Hint => "eg. 42u";
 
         public override bool TryParse(string arg, out object argObj)
         {
@@ -52,7 +52,7 @@ namespace UniGM
 
         public override Regex Template => _template;
 
-        public override string Hint => "长整数，后缀 L，例如 42L、-1L";
+        public override string Hint => "eg. 42L";
 
         public override bool TryParse(string arg, out object argObj)
         {
@@ -74,7 +74,7 @@ namespace UniGM
 
         public override Regex Template => _template;
 
-        public override string Hint => "无符号长整数，后缀 ul 或 lu，例如 42ul、42lu";
+        public override string Hint => "eg. 42ul, 42lu";
 
         public override bool TryParse(string arg, out object argObj)
         {
@@ -97,7 +97,7 @@ namespace UniGM
 
         public override Regex Template => _template;
 
-        public override string Hint => "小数、科学计数或后缀 f，例如 1.5、.5、1e-3、1.5f、1f";
+        public override string Hint => "eg. 1.5, 1.5f";
 
         public override bool TryParse(string arg, out object argObj)
         {
@@ -119,7 +119,7 @@ namespace UniGM
 
         public override Regex Template => _template;
 
-        public override string Hint => "双精度小数，后缀 d，例如 1.5d、1d、1e-3d";
+        public override string Hint => "eg. 1.5d";
 
         public override bool TryParse(string arg, out object argObj)
         {
@@ -141,7 +141,7 @@ namespace UniGM
 
         public override Regex Template => _template;
 
-        public override string Hint => "小数，后缀 m，例如 1.5m、1m";
+        public override string Hint => "eg. 1.5m";
 
         public override bool TryParse(string arg, out object argObj)
         {

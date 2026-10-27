@@ -38,10 +38,12 @@ namespace UniGM
         public static bool IsTyping { get; private set; }
 
         /// <summary>
-        /// 创建 GM 窗口并开始接收 Debug 日志。由游戏启动流程调用，重复调用没有额外效果。
+        /// 创建 GM 窗口并开始接收 Debug 日志。由游戏启动流程调用。
+        /// <paramref name="input"/> 提供按键和鼠标状态，重复调用会换成新的实现。
         /// </summary>
-        public static void Initialize()
+        public static void Initialize(IGmInput input)
         {
+            GmInput.Bind(input);
             GmLogHub.Subscribe();
             GMManager.Ensure();
         }

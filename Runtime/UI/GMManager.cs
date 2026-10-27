@@ -156,17 +156,17 @@ namespace UniGM
 
         private void ApplyWindowChanges()
         {
-            if ((_dragging || _resizing) && !GmInput.GetMouseButton(0))
+            if ((_dragging || _resizing) && !GmInput.GetDragOrResizeGMPointerTriggered(out _))
             {
                 _dragging = false;
                 _resizing = false;
                 SaveWindow();
             }
 
-            if (_pillDrag && !GmInput.GetMouseButton(0))
+            if (_pillDrag && !GmInput.GetDragOrResizeGMPointerTriggered(out _))
                 FinishPillGesture();
 
-            if (!GmInput.GetKey(KeyCode.F1))
+            if (!GmInput.GetOpenOrCloseGMShortcutKeyTriggered(out _))
                 _f1Held = false;
 
             if (_hideRequested)
@@ -356,7 +356,8 @@ namespace UniGM
                 _skin.Title.normal.textColor = _skin.Text;
                 _skin.DrawText(title, _skin.Title, "GM  运行时管理器");
                 _skin.MutedStyle.alignment = TextAnchor.MiddleRight;
-                _skin.DrawText(new Rect(title.x, title.y, title.width - _skin.Px(70), title.height), _skin.MutedStyle, "F1");
+                GmInput.GetOpenOrCloseGMShortcutKeyTriggered(out string openKey);
+                _skin.DrawText(new Rect(title.x, title.y, title.width - _skin.Px(70), title.height), _skin.MutedStyle, openKey ?? string.Empty);
                 _skin.MutedStyle.alignment = TextAnchor.MiddleLeft;
             }
 

@@ -106,7 +106,7 @@ namespace UniGM
                 _historyMove = 0;
             }
 
-            if (!GmInput.GetKey(KeyCode.Return) && !GmInput.GetKey(KeyCode.KeypadEnter))
+            if (!GmInput.GetSubmitGMCommandShortcutKeyTriggered(out _) && !GmInput.GetSubmitGMCommandKeypadShortcutKeyTriggered(out _))
                 _enterHeld = false;
 
             if (_clearRequested)

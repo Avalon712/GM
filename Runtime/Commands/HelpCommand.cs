@@ -10,24 +10,12 @@ namespace UniGM
     {
         public override string Name => "help";
 
-        public override string Hint =>
-            "help | help arg [TypeName] | help gm [CommandName]。只输入 help 会同时列出参数写法和全部命令；help arg 类型名 只显示该类型的写法；help gm 命令名 只显示该命令的用法。";
+        public override string Hint => "eg. help, help arg Vector3, help gm cube";
 
         internal const string UsageText =
-            "help\n" +
-            "    同时列出全部参数写法和全部命令\n" +
-            "\n" +
-            "help arg\n" +
-            "    列出每种参数类型的输入写法\n" +
-            "\n" +
-            "help arg TypeName\n" +
-            "    只显示该类型怎么写，例如 help arg Vector3\n" +
-            "\n" +
-            "help gm\n" +
-            "    列出全部已注册命令\n" +
-            "\n" +
-            "help gm CommandName\n" +
-            "    只显示该命令的用法，例如 help gm cube";
+            "eg. help\n" +
+            "eg. help arg Vector3\n" +
+            "eg. help gm cube";
 
         public override void Execute(IReadOnlyList<object> args)
         {

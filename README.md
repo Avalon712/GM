@@ -25,18 +25,50 @@ https://github.com/Avalon712/GM.git
 
 在项目的 `Packages` 目录下创建一个子目录，名称取 **org.avalon712.gm**，把仓库内容放进这个目录。Unity 会识别其中的 `package.json`，并把包加入项目。
 
-### 四、安装需要注意的一些事项
-
-本包依赖 `com.unity.inputsystem` 1.0.0 及以上。项目里已经有更高版本时会继续用那个版本。`GM.Runtime` 引用了 `Unity.InputSystem`。键盘和鼠标与 FinalIK 的 `CameraController` 相同：定义了 `ENABLE_LEGACY_INPUT_MANAGER` 时用旧的 `UnityEngine.Input`，Player Settings 选 Both 时也走这条路径。只有关掉旧输入、单独启用 Input System 时，才使用 `UnityEngine.InputSystem`。
+本包不依赖其他 Unity 包。按键和鼠标由游戏自己实现 `IGmInput`，在 `GM.Initialize` 时传入。
 
 ---
 
 ## 打开界面
 
-游戏启动时调用一次：
+游戏启动时调用一次，并传入输入实现：
 
 ```csharp
-GM.Initialize();
+GM.Initialize(new MyGmInput());
+```
+
+`IGmInput` 的四个方法分别表示：打开或关闭窗口、拖动或缩放、回车提交、小键盘回车提交。返回值是该键是否正按住，`shortcutKeyName` 是界面上显示的键名。框架不访问 `UnityEngine.Input`，也不引用 Input System。下面是用旧输入系统写的一种实现：
+
+```csharp
+using UniGM;
+using UnityEngine;
+
+public sealed class MyGmInput : IGmInput
+{
+    public bool GetOpenOrCloseGMShortcutKeyTriggered(out string shortcutKeyName)
+    {
+        shortcutKeyName = "F1";
+        return Input.GetKey(KeyCode.F1);
+    }
+
+    public bool GetDragOrResizeGMPointerTriggered(out string shortcutKeyName)
+    {
+        shortcutKeyName = "Mouse0";
+        return Input.GetMouseButton(0);
+    }
+
+    public bool GetSubmitGMCommandShortcutKeyTriggered(out string shortcutKeyName)
+    {
+        shortcutKeyName = "Enter";
+        return Input.GetKey(KeyCode.Return);
+    }
+
+    public bool GetSubmitGMCommandKeypadShortcutKeyTriggered(out string shortcutKeyName)
+    {
+        shortcutKeyName = "KeypadEnter";
+        return Input.GetKey(KeyCode.KeypadEnter);
+    }
+}
 ```
 
 这一步会创建窗口并开始接收 `Debug` 日志。包内不会自己用 `RuntimeInitializeOnLoadMethod` 启动。
@@ -75,7 +107,7 @@ public sealed class CubeCommand : GMCommand
 {
     public override string Name => "cube";
 
-    public override string Hint => "cube (x,y,z) (x,y,z)，位置与欧拉角，例如 cube (1,9,0) (0,89,0)";
+    public override string Hint => "eg. cube (1,9,0) (0,89,0)";
 
     public override void Execute(IReadOnlyList<object> args)
     {
@@ -190,7 +222,7 @@ public sealed class GmSampleTeamParser : ArgParser<GmSampleTeam>
 
     public override Regex Template => _template;
 
-    public override string Hint => "red 或 blue，例如 red";
+    public override string Hint => "eg. red, blue";
 
     public override bool TryParse(string arg, out object argObj)
     {
@@ -223,7 +255,7 @@ GM.Unregister<GmSampleTeam>();
 
 ## 本仓库里的用例
 
-`Assets/Scripts/Runtime/GM` 提供这些示例命令。本仓库在 `TestLuncher.Awake` 里调用 `GM.Initialize()` 和 `GMSampleRegister.Register()`。
+`Assets/Scripts/Runtime/GM` 提供这些示例命令。本仓库在 `TestLuncher.Awake` 里调用 `GM.Initialize(new LegacyGmInput())` 和 `GMSampleRegister.Register()`。
 
 | 命令 | 示例 |
 | --- | --- |
@@ -239,7 +271,7 @@ GM.Unregister<GmSampleTeam>();
 ## 常见问题
 
 **Q: Play 之后没有 GM 按钮？**  
-A: 确认启动流程调用了 `GM.Initialize()`。
+A: 确认启动流程调用了 `GM.Initialize`，并且传入的 `IGmInput` 能读到打开窗口、拖动和提交命令这几个快捷键。
 
 **Q: 参数一直解析失败？**  
 A: 输入 `help arg` 看写法。字符串必须是英文双引号；整数向量是 `i(1,2)` 这种形式，不是 `(1,2)`。
@@ -251,7 +283,7 @@ A: `1.5` 会解析成 `float`，而示例命令 `add` 只要两个 `int`。无�
 A: 输出请用 `GM.Print`。`Debug.Log` 在 Console 页。
 
 **Q: 怎么让发布包里不出现 GM 窗口？**  
-A: 发布用的启动流程不要调用 `GM.Initialize()`。不调用就不会创建窗口，也不会订阅 `Debug` 日志。
+A: 发布用的启动流程不要调用 `GM.Initialize`。不调用就不会创建窗口，也不会订阅 `Debug` 日志。
 
 ---
 

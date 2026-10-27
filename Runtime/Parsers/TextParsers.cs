@@ -9,7 +9,7 @@ namespace UniGM
 
         public override Regex Template => _template;
 
-        public override string Hint => "true 或 false，忽略大小写";
+        public override string Hint => "eg. true, false";
 
         public override bool TryParse(string arg, out object argObj)
         {
@@ -36,7 +36,7 @@ namespace UniGM
 
         public override Regex Template => _template;
 
-        public override string Hint => "英文单引号包裹的一个字符，例如 'a'、'\\n'、'\\t'、'\\''";
+        public override string Hint => "eg. 'a'";
 
         public override bool TryParse(string arg, out object argObj)
         {
@@ -64,7 +64,7 @@ namespace UniGM
 
         public override Regex Template => _template;
 
-        public override string Hint => "英文双引号字符串，例如 \"hello\"。转义：\\\\、\\\"、\\n、\\t";
+        public override string Hint => "eg. \"hello\"";
 
         public override bool TryParse(string arg, out object argObj)
         {

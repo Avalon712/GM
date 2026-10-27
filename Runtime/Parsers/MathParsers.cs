@@ -9,7 +9,7 @@ namespace UniGM
 
         public override Regex Template => _template;
 
-        public override string Hint => "(x,y)，例如 (1,2)、(1.5, -2)、(-1f, 0.5)";
+        public override string Hint => "eg. (1,0), (1.5,-2)";
 
         public override bool TryParse(string arg, out object argObj)
         {
@@ -33,7 +33,7 @@ namespace UniGM
 
         public override Regex Template => _template;
 
-        public override string Hint => "(x,y,z)，例如 (1,9,0)、(1.5, -2, 0f)";
+        public override string Hint => "eg. (1,0,0)";
 
         public override bool TryParse(string arg, out object argObj)
         {
@@ -58,7 +58,7 @@ namespace UniGM
 
         public override Regex Template => _template;
 
-        public override string Hint => "(x,y,z,w)，例如 (1,0,0,1)";
+        public override string Hint => "eg. (1,0,0,1)";
 
         public override bool TryParse(string arg, out object argObj)
         {
@@ -84,7 +84,7 @@ namespace UniGM
 
         public override Regex Template => _template;
 
-        public override string Hint => "i(x,y)，只接受整数，例如 i(3,4)、i(-1, 2)";
+        public override string Hint => "eg. i(1,0)";
 
         public override bool TryParse(string arg, out object argObj)
         {
@@ -108,7 +108,7 @@ namespace UniGM
 
         public override Regex Template => _template;
 
-        public override string Hint => "i(x,y,z)，只接受整数，例如 i(1,2,3)";
+        public override string Hint => "eg. i(1,0,0)";
 
         public override bool TryParse(string arg, out object argObj)
         {
@@ -133,7 +133,7 @@ namespace UniGM
 
         public override Regex Template => _template;
 
-        public override string Hint => "q(x,y,z,w)，例如 q(0,0,0,1)";
+        public override string Hint => "eg. q(0,0,0,1)";
 
         public override bool TryParse(string arg, out object argObj)
         {
@@ -159,7 +159,7 @@ namespace UniGM
 
         public override Regex Template => _template;
 
-        public override string Hint => "c(r,g,b) 或 c(r,g,b,a)，分量按 0~1，例如 c(1,0,0)、c(1,0,0,1)";
+        public override string Hint => "eg. c(1,0,0), c(1,0,0,1)";
 
         public override bool TryParse(string arg, out object argObj)
         {
@@ -195,7 +195,7 @@ namespace UniGM
 
         public override Regex Template => _template;
 
-        public override string Hint => "rect(x,y,width,height)，例如 rect(0,0,100,50)";
+        public override string Hint => "eg. rect(0,0,100,50)";
 
         public override bool TryParse(string arg, out object argObj)
         {

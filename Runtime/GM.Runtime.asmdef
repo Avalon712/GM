@@ -1,9 +1,7 @@
 {
     "name": "GM.Runtime",
     "rootNamespace": "UniGM",
-    "references": [
-        "Unity.InputSystem"
-    ],
+    "references": [],
     "includePlatforms": [],
     "excludePlatforms": [],
     "allowUnsafeCode": false,
