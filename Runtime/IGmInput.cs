@@ -24,5 +24,15 @@ namespace UniGM
         /// 提交当前 GM 命令的小键盘回车是否正按住。<paramref name="shortcutKeyName"/> 为界面上显示的键名。
         /// </summary>
         bool GetSubmitGMCommandKeypadShortcutKeyTriggered(out string shortcutKeyName);
+
+        /// <summary>
+        /// 显示上一条历史命令的快捷键是否正按住。<paramref name="shortcutKeyName"/> 为界面上显示的键名。
+        /// </summary>
+        bool GetShowPreviousGMCommandShortcutKeyTriggered(out string shortcutKeyName);
+
+        /// <summary>
+        /// 显示下一条历史命令的快捷键是否正按住。<paramref name="shortcutKeyName"/> 为界面上显示的键名。
+        /// </summary>
+        bool GetShowNextGMCommandShortcutKeyTriggered(out string shortcutKeyName);
     }
 }

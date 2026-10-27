@@ -43,7 +43,7 @@ GM.Initialize();
 GM.Initialize(new MyGmInput());
 ```
 
-`IGmInput` 的四个方法分别表示：打开或关闭窗口、拖动或缩放、回车提交、小键盘回车提交。返回值是该键是否正按住，`shortcutKeyName` 是界面上显示的键名。框架不引用 Input System。下面是一种自己实现的写法：
+`IGmInput` 的六个方法分别表示：打开或关闭窗口、拖动或缩放、回车提交、小键盘回车提交、上一条历史、下一条历史。返回值是该键是否正按住，`shortcutKeyName` 是界面上显示的键名。框架不引用 Input System。下面是一种自己实现的写法：
 
 ```csharp
 using UniGM;
@@ -73,6 +73,18 @@ public sealed class MyGmInput : IGmInput
     {
         shortcutKeyName = "KeypadEnter";
         return Input.GetKey(KeyCode.KeypadEnter);
+    }
+
+    public bool GetShowPreviousGMCommandShortcutKeyTriggered(out string shortcutKeyName)
+    {
+        shortcutKeyName = "↑";
+        return Input.GetKey(KeyCode.UpArrow);
+    }
+
+    public bool GetShowNextGMCommandShortcutKeyTriggered(out string shortcutKeyName)
+    {
+        shortcutKeyName = "↓";
+        return Input.GetKey(KeyCode.DownArrow);
     }
 }
 ```

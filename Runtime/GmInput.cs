@@ -55,5 +55,27 @@ namespace UniGM
 
             return _input.GetSubmitGMCommandKeypadShortcutKeyTriggered(out shortcutKeyName);
         }
+
+        public static bool GetShowPreviousGMCommandShortcutKeyTriggered(out string shortcutKeyName)
+        {
+            if (_input == null)
+            {
+                shortcutKeyName = string.Empty;
+                return false;
+            }
+
+            return _input.GetShowPreviousGMCommandShortcutKeyTriggered(out shortcutKeyName);
+        }
+
+        public static bool GetShowNextGMCommandShortcutKeyTriggered(out string shortcutKeyName)
+        {
+            if (_input == null)
+            {
+                shortcutKeyName = string.Empty;
+                return false;
+            }
+
+            return _input.GetShowNextGMCommandShortcutKeyTriggered(out shortcutKeyName);
+        }
     }
 }

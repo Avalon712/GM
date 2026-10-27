@@ -4,7 +4,7 @@ using UnityEngine;
 namespace UniGM
 {
     /// <summary>
-    /// 旧输入系统上的默认快捷键：F1、鼠标左键、回车、小键盘回车。
+    /// 旧输入系统上的默认快捷键：F1、鼠标左键、回车、小键盘回车、上方向键、下方向键。
     /// </summary>
     public sealed class LegacyGmInput : IGmInput
     {
@@ -42,6 +42,24 @@ namespace UniGM
         {
             shortcutKeyName = "KeypadEnter";
             return Input.GetKey(KeyCode.KeypadEnter);
+        }
+
+        /// <summary>
+        /// 上方向键是否正按住。
+        /// </summary>
+        public bool GetShowPreviousGMCommandShortcutKeyTriggered(out string shortcutKeyName)
+        {
+            shortcutKeyName = "↑";
+            return Input.GetKey(KeyCode.UpArrow);
+        }
+
+        /// <summary>
+        /// 下方向键是否正按住。
+        /// </summary>
+        public bool GetShowNextGMCommandShortcutKeyTriggered(out string shortcutKeyName)
+        {
+            shortcutKeyName = "↓";
+            return Input.GetKey(KeyCode.DownArrow);
         }
     }
 }

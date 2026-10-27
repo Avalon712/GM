@@ -20,6 +20,8 @@ namespace UniGM
         private bool _submit;
         private bool _clearRequested;
         private bool _enterHeld;
+        private bool _previousHistoryHeld;
+        private bool _nextHistoryHeld;
         private bool _forceScroll;
         private int _seenVersion = -1;
         private float[] _rowHeights = System.Array.Empty<float>();
@@ -73,20 +75,6 @@ namespace UniGM
             if (GUI.GetNameOfFocusedControl() != InputControl)
                 return;
 
-            if (current.keyCode == KeyCode.UpArrow)
-            {
-                _historyMove = -1;
-                current.Use();
-                return;
-            }
-
-            if (current.keyCode == KeyCode.DownArrow)
-            {
-                _historyMove = 1;
-                current.Use();
-                return;
-            }
-
             if ((current.keyCode == KeyCode.Return || current.keyCode == KeyCode.KeypadEnter) && !_enterHeld)
             {
                 _enterHeld = true;
@@ -100,6 +88,7 @@ namespace UniGM
 
         private void ApplyChanges()
         {
+            PollHistoryKeys();
             if (_historyMove != 0)
             {
                 MoveHistory(_historyMove);
@@ -143,6 +132,19 @@ namespace UniGM
                 _scroll.y = 1000000f;
                 _forceScroll = false;
             }
+        }
+
+        private void PollHistoryKeys()
+        {
+            bool focused = GUI.GetNameOfFocusedControl() == InputControl;
+            bool previous = GmInput.GetShowPreviousGMCommandShortcutKeyTriggered(out _);
+            bool next = GmInput.GetShowNextGMCommandShortcutKeyTriggered(out _);
+            if (focused && previous && !_previousHistoryHeld)
+                _historyMove = -1;
+            if (focused && next && !_nextHistoryHeld)
+                _historyMove = 1;
+            _previousHistoryHeld = previous;
+            _nextHistoryHeld = next;
         }
 
         private void MoveHistory(int direction)
