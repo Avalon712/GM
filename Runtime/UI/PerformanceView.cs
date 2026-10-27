@@ -5,11 +5,12 @@ using UnityEngine.Profiling;
 namespace UniGM
 {
     /// <summary>
-    /// 运行时性能页。每秒刷新平均帧率，并用最近一段帧时间计算 1% Low、0.1% Low 和内存。
+    /// 运行时性能页。每秒刷新平均帧率，并用最近一段帧时间计算 1% Low、0.1% Low。内存每 10 秒刷新。
     /// </summary>
     internal sealed class PerformanceView
     {
         private const int Capacity = 1000;
+        private const float MemoryRefreshSeconds = 10f;
 
         private readonly float[] _times = new float[Capacity];
         private readonly float[] _sort = new float[Capacity];
@@ -19,6 +20,7 @@ namespace UniGM
         private int _lastFrame = -1;
         private int _secondFrames;
         private float _secondElapsed;
+        private float _memoryElapsed;
         private bool _ready;
 
         private float _avgFps;
@@ -63,7 +65,7 @@ namespace UniGM
             y = Metric(skin, y, width, row, "托管内存", FormatBytes(_managed), skin.Text);
             y += skin.Px(10);
             skin.MutedStyle.normal.textColor = skin.Muted;
-            GUI.Label(new Rect(skin.Px(4), y, width - skin.Px(8), row * 2f), "平均帧率按最近 1 秒统计。1% Low 和 0.1% Low 取最近 1000 帧里最慢的帧。", skin.MutedStyle);
+            GUI.Label(new Rect(skin.Px(4), y, width - skin.Px(8), row * 2f), "平均帧率按最近 1 秒统计。1% Low 和 0.1% Low 取最近 1000 帧里最慢的帧。内存每 10 秒刷新。", skin.MutedStyle);
 
             GUI.EndScrollView();
         }
@@ -85,13 +87,19 @@ namespace UniGM
 
             _secondFrames++;
             _secondElapsed += dt;
+            _memoryElapsed += dt;
+            if (_allocated < 0 || _memoryElapsed >= MemoryRefreshSeconds)
+            {
+                ReadMemory();
+                _memoryElapsed = 0f;
+            }
+
             if (_secondElapsed < 1f)
                 return;
 
             _avgFps = _secondFrames / _secondElapsed;
             _avgFrameMs = _secondElapsed / _secondFrames * 1000f;
             ComputeLows();
-            ReadMemory();
             _ready = true;
             _secondFrames = 0;
             _secondElapsed = 0f;
