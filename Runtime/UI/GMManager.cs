@@ -102,7 +102,7 @@ namespace UniGM
         private void Update()
         {
             if (Application.isPlaying)
-                _stats.Sample();
+                _stats.Sample(_visible);
         }
 
         private void OnGUI()
@@ -172,7 +172,7 @@ namespace UniGM
 
             if (_hideRequested)
             {
-                _visible = false;
+                SetWindowVisible(false);
                 _hideRequested = false;
                 _showRequested = false;
                 _toggleRequested = false;
@@ -181,7 +181,7 @@ namespace UniGM
             }
             else if (_showRequested)
             {
-                _visible = true;
+                SetWindowVisible(true);
                 _showRequested = false;
                 _toggleRequested = false;
                 if (_tab == 1)
@@ -189,7 +189,7 @@ namespace UniGM
             }
             else if (_toggleRequested)
             {
-                _visible = !_visible;
+                SetWindowVisible(!_visible);
                 _toggleRequested = false;
                 if (_visible && _tab == 1)
                     _focusInput = true;
@@ -222,6 +222,16 @@ namespace UniGM
             }
 
             ClampWindow();
+        }
+
+        private void SetWindowVisible(bool visible)
+        {
+            if (visible == _visible)
+                return;
+
+            _visible = visible;
+            if (visible)
+                _stats.OnWindowOpened();
         }
 
         private void TrackPointer()

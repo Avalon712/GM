@@ -5,7 +5,7 @@ using UnityEngine.Profiling;
 namespace UniGM
 {
     /// <summary>
-    /// 运行时性能页。每秒刷新平均帧率，并用最近一段帧时间计算 1% Low、0.1% Low。内存每 10 秒刷新。
+    /// 运行时性能页。每秒刷新平均帧率，并用最近一段帧时间计算 1% Low、0.1% Low。内存只在窗口打开时读取，之后每 10 秒刷新。
     /// </summary>
     internal sealed class PerformanceView
     {
@@ -21,6 +21,7 @@ namespace UniGM
         private int _secondFrames;
         private float _secondElapsed;
         private float _memoryElapsed;
+        private bool _memoryWatching;
         private bool _ready;
 
         private float _avgFps;
@@ -65,12 +66,12 @@ namespace UniGM
             y = Metric(skin, y, width, row, "托管内存", FormatBytes(_managed), skin.Text);
             y += skin.Px(10);
             skin.MutedStyle.normal.textColor = skin.Muted;
-            GUI.Label(new Rect(skin.Px(4), y, width - skin.Px(8), row * 2f), "平均帧率按最近 1 秒统计。1% Low 和 0.1% Low 取最近 1000 帧里最慢的帧。内存每 10 秒刷新。", skin.MutedStyle);
+            GUI.Label(new Rect(skin.Px(4), y, width - skin.Px(8), row * 2f), "平均帧率按最近 1 秒统计。1% Low 和 0.1% Low 取最近 1000 帧里最慢的帧。窗口打开时读取内存，之后每 10 秒刷新。", skin.MutedStyle);
 
             GUI.EndScrollView();
         }
 
-        internal void Sample()
+        internal void Sample(bool windowOpen)
         {
             if (_lastFrame == Time.frameCount)
                 return;
@@ -87,11 +88,18 @@ namespace UniGM
 
             _secondFrames++;
             _secondElapsed += dt;
-            _memoryElapsed += dt;
-            if (_allocated < 0 || _memoryElapsed >= MemoryRefreshSeconds)
+            if (windowOpen && _memoryWatching)
             {
-                ReadMemory();
-                _memoryElapsed = 0f;
+                _memoryElapsed += dt;
+                if (_memoryElapsed >= MemoryRefreshSeconds)
+                {
+                    ReadMemory();
+                    _memoryElapsed = 0f;
+                }
+            }
+            else if (!windowOpen)
+            {
+                _memoryWatching = false;
             }
 
             if (_secondElapsed < 1f)
@@ -103,6 +111,13 @@ namespace UniGM
             _ready = true;
             _secondFrames = 0;
             _secondElapsed = 0f;
+        }
+
+        internal void OnWindowOpened()
+        {
+            ReadMemory();
+            _memoryElapsed = 0f;
+            _memoryWatching = true;
         }
 
         private void ComputeLows()
