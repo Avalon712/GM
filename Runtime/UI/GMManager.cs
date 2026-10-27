@@ -81,6 +81,7 @@ namespace UniGM
             }
 
             _instance = this;
+            _command.LoadHistory();
         }
 
         private void OnDestroy()

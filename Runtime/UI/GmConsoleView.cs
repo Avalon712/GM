@@ -32,7 +32,7 @@ namespace UniGM
         private float _usageTitle;
         private float _usageBody;
 
-        public GmConsoleView()
+        public void LoadHistory()
         {
             GmCommandHistoryFile.Read(_history);
         }
