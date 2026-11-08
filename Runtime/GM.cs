@@ -203,14 +203,46 @@ namespace UniGM
             return GmOutput.Set(line, message, GmLineKind.Echo);
         }
 
-        internal static int Fail(string message)
+        /// <summary>
+        /// 向 GM 控制台新写一行警告，返回这一行的行号。
+        /// </summary>
+        public static int Warn(string message)
+        {
+            return GmOutput.Add(message, GmLineKind.Warn);
+        }
+
+        /// <summary>
+        /// 改写指定行的警告。该行已经滚出缓冲时另起一行，并返回新行号。
+        /// </summary>
+        public static int Warn(int line, string message)
+        {
+            return GmOutput.Set(line, message, GmLineKind.Warn);
+        }
+
+        /// <summary>
+        /// 向 GM 控制台新写一行错误，返回这一行的行号。
+        /// </summary>
+        public static int Error(string message)
         {
             return GmOutput.Add(message, GmLineKind.Error);
         }
 
-        internal static int Fail(int line, string message)
+        /// <summary>
+        /// 改写指定行的错误。该行已经滚出缓冲时另起一行，并返回新行号。
+        /// </summary>
+        public static int Error(int line, string message)
         {
             return GmOutput.Set(line, message, GmLineKind.Error);
+        }
+
+        internal static int Fail(string message)
+        {
+            return Error(message);
+        }
+
+        internal static int Fail(int line, string message)
+        {
+            return Error(line, message);
         }
 
         internal static void ClearOutput()

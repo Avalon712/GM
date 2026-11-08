@@ -27,6 +27,7 @@ namespace UniGM
         public readonly Color CmdText = new Color(0.820f, 0.820f, 0.820f, 1f);
         public readonly Color CmdEcho = new Color(0.930f, 0.930f, 0.930f, 1f);
         public readonly Color CmdDim = new Color(0.550f, 0.550f, 0.550f, 1f);
+        public readonly Color CmdWarn = new Color(1f, 0.820f, 0.310f, 1f);
         public readonly Color CmdError = new Color(1f, 0.420f, 0.380f, 1f);
         public readonly Color CmdButton = new Color(0.275f, 0.275f, 0.275f, 1f);
         public readonly Color Stats = new Color(0.550f, 0.780f, 0.480f, 1f);
@@ -99,6 +100,7 @@ namespace UniGM
             Stack = Make(10, FontStyle.Normal, Muted, TextAnchor.UpperLeft);
             Detail = Make(11, FontStyle.Normal, Text, TextAnchor.UpperLeft);
             Cmd = Make(11, FontStyle.Normal, CmdText, TextAnchor.UpperLeft);
+            Cmd.richText = true;
             CmdInput = Make(12, FontStyle.Normal, CmdEcho, TextAnchor.MiddleLeft);
 
             Log.wordWrap = false;

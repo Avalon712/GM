@@ -7,6 +7,7 @@ namespace UniGM
     {
         Echo,
         Info,
+        Warn,
         Error
     }
 

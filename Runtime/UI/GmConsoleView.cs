@@ -334,6 +334,10 @@ namespace UniGM
                     skin.Cmd.fontStyle = FontStyle.Bold;
                     skin.Cmd.normal.textColor = skin.CmdEcho;
                     break;
+                case GmLineKind.Warn:
+                    skin.Cmd.fontStyle = FontStyle.Normal;
+                    skin.Cmd.normal.textColor = skin.CmdWarn;
+                    break;
                 case GmLineKind.Error:
                     skin.Cmd.fontStyle = FontStyle.Normal;
                     skin.Cmd.normal.textColor = skin.CmdError;
