@@ -172,21 +172,45 @@ namespace UniGM
         }
 
         /// <summary>
-        /// 向 GM 控制台写一行普通文本，不会进入 Debug 控制台。
+        /// 向 GM 控制台新写一行普通文本，返回这一行的行号。
         /// </summary>
-        public static void Print(string message)
+        public static int Print(string message)
         {
-            GmOutput.Add(message ?? string.Empty, GmLineKind.Info);
+            return GmOutput.Add(message, GmLineKind.Info);
         }
 
-        internal static void Echo(string message)
+        /// <summary>
+        /// 改写指定行的普通文本。该行已经滚出缓冲时另起一行，并返回新行号。
+        /// </summary>
+        public static int Print(int line, string message)
         {
-            GmOutput.Add(message ?? string.Empty, GmLineKind.Echo);
+            return GmOutput.Set(line, message, GmLineKind.Info);
         }
 
-        internal static void Fail(string message)
+        /// <summary>
+        /// 向 GM 控制台新写一行命令回显，返回这一行的行号。
+        /// </summary>
+        public static int Echo(string message)
         {
-            GmOutput.Add(message ?? string.Empty, GmLineKind.Error);
+            return GmOutput.Add(message, GmLineKind.Echo);
+        }
+
+        /// <summary>
+        /// 改写指定行的命令回显。该行已经滚出缓冲时另起一行，并返回新行号。
+        /// </summary>
+        public static int Echo(int line, string message)
+        {
+            return GmOutput.Set(line, message, GmLineKind.Echo);
+        }
+
+        internal static int Fail(string message)
+        {
+            return GmOutput.Add(message, GmLineKind.Error);
+        }
+
+        internal static int Fail(int line, string message)
+        {
+            return GmOutput.Set(line, message, GmLineKind.Error);
         }
 
         internal static void ClearOutput()

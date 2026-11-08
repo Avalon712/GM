@@ -119,14 +119,15 @@ namespace UniGM
                 }
             }
 
+            int previous = _lines.Count;
+            GM.CopyOutput(_lines);
             int version = GM.OutputVersion;
             if (version != _seenVersion)
             {
                 _seenVersion = version;
-                _forceScroll = true;
+                if (_lines.Count > previous)
+                    _forceScroll = true;
             }
-
-            GM.CopyOutput(_lines);
             if (_forceScroll)
             {
                 _scroll.y = 1000000f;

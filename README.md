@@ -106,7 +106,7 @@ public sealed class MyGmInput : IGmInput
 | **GM** | 命令行风格，和 Console 分开。命令回显、`GM.Print`、解析错误和异常都在这里。底部输入命令，Enter 执行，↑↓ 翻历史。编辑器里会把命令历史写成 `persistentDataPath/UniGM/command-history.bin`，初始化时读回，退出 Play 时写回。还没有任何输出时，会显示 `help` 的用法 |
 | **性能** | 最近 1 秒的平均帧率、帧时间，以及最近 1000 帧的 1% Low、0.1% Low。内存只在 GM 窗口打开时读取：打开时立即刷新，之后每 10 秒一次 |
 
-命令想显示在 GM 页，调用 `GM.Print`。`Debug.Log` 只会进 Console 页。
+命令想显示在 GM 页，调用 `GM.Print`。它返回行号；`GM.Print(行号, 文本)` 会改写这一行，适合刷新进度。`GM.Echo` 同样有这两个重载。`Debug.Log` 只会进 Console 页。
 
 命令框获得焦点时 `GM.IsTyping` 为 `true`，游戏逻辑可以据此忽略自己的快捷键。按 Esc：正在输入时先取消焦点，否则关闭窗口。
 
@@ -281,6 +281,7 @@ GM.Unregister<GmSampleTeam>();
 | `add` | `add 2 40` |
 | `echo` | `echo "hello world"` |
 | `team` | `team red` |
+| `download` | `download` |
 
 `team` 使用上面的自定义 `GmSampleTeam` 解析器，用来演示扩展类型，不覆盖内置解析器。
 
