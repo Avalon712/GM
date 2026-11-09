@@ -19,6 +19,7 @@ namespace UniGM
         private int _historyMove;
         private bool _submit;
         private bool _clearRequested;
+        private bool _clearHistoryRequested;
         private bool _enterHeld;
         private bool _previousHistoryHeld;
         private bool _nextHistoryHeld;
@@ -104,6 +105,16 @@ namespace UniGM
                 _clearRequested = false;
             }
 
+            if (_clearHistoryRequested)
+            {
+                _history.Clear();
+                _historyIndex = -1;
+                _draft = string.Empty;
+                _historyMove = 0;
+                GmCommandHistoryFile.Delete();
+                _clearHistoryRequested = false;
+            }
+
             if (_submit)
             {
                 _submit = false;
@@ -185,15 +196,23 @@ namespace UniGM
 
         private void DrawToolbar(Rect rect, GmSkin skin)
         {
+            float gap = skin.Px(2);
+            float clearWidth = skin.Px(64);
+            float historyWidth = skin.Measure(skin.Tab, "清历史").x + skin.Px(12);
+            float buttons = historyWidth + gap + clearWidth;
+
             if (Event.current.type == EventType.Repaint)
             {
                 skin.MutedStyle.alignment = TextAnchor.MiddleLeft;
                 skin.MutedStyle.normal.textColor = skin.CmdDim;
-                skin.DrawText(new Rect(rect.x, rect.y, rect.width - skin.Px(90), rect.height), skin.MutedStyle, "Enter 执行    ↑↓ 历史");
+                skin.DrawText(new Rect(rect.x, rect.y, Mathf.Max(0f, rect.width - buttons - gap), rect.height), skin.MutedStyle, "Enter 执行    ↑↓ 历史");
                 skin.MutedStyle.normal.textColor = skin.Muted;
             }
 
-            if (skin.Button(new Rect(rect.xMax - skin.Px(64), rect.y, skin.Px(64), rect.height), "清空", false, skin.ButtonFace))
+            Rect history = new Rect(rect.xMax - buttons, rect.y, historyWidth, rect.height);
+            if (skin.Button(history, "清历史", false, skin.ButtonFace))
+                _clearHistoryRequested = true;
+            if (skin.Button(new Rect(history.xMax + gap, rect.y, clearWidth, rect.height), "清空", false, skin.ButtonFace))
                 _clearRequested = true;
         }
 

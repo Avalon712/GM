@@ -51,10 +51,37 @@ namespace UniGM
             }
         }
 
+        public static void Delete()
+        {
+            if (!Application.isEditor)
+                return;
+
+            try
+            {
+                string path = FilePath();
+                if (File.Exists(path))
+                    File.Delete(path);
+
+                string temp = path + ".tmp";
+                if (File.Exists(temp))
+                    File.Delete(temp);
+            }
+            catch (Exception exception)
+            {
+                Debug.LogWarning("GM 命令历史删除失败：" + exception.Message);
+            }
+        }
+
         public static void Write(List<string> history)
         {
             if (!Application.isEditor || history == null)
                 return;
+
+            if (history.Count == 0)
+            {
+                Delete();
+                return;
+            }
 
             try
             {

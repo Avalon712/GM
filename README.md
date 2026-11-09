@@ -103,7 +103,7 @@ public sealed class MyGmInput : IGmInput
 | 页签 | 内容 |
 | --- | --- |
 | **Console** | `Debug.Log` / `LogWarning` / `LogError`。可按 Info、Warning、Error 过滤，正则搜索、折叠、清空。点击一行后，下方单独的面板显示完整内容和堆栈 |
-| **GM** | 命令行风格，和 Console 分开。命令回显、`GM.Print`、解析错误和异常都在这里。底部输入命令，Enter 执行，↑↓ 翻历史。编辑器里会把命令历史写成 `persistentDataPath/UniGM/command-history.bin`，初始化时读回，退出 Play 时写回。还没有任何输出时，会显示 `help` 的用法 |
+| **GM** | 命令行风格，和 Console 分开。命令回显、`GM.Print`、解析错误和异常都在这里。底部输入命令，Enter 执行，↑↓ 翻历史。编辑器里会把命令历史写成 `persistentDataPath/UniGM/command-history.bin`，初始化时读回，退出 Play 时写回。工具栏的「清历史」会清掉这些记录并删除该文件。还没有任何输出时，会显示 `help` 的用法 |
 | **性能** | 最近 1 秒的平均帧率、帧时间，以及最近 1000 帧的 1% Low、0.1% Low。内存只在 GM 窗口打开时读取：打开时立即刷新，之后每 10 秒一次 |
 
 命令想显示在 GM 页，调用 `GM.Print`。`GM.Warn` 是黄色警告，`GM.Error` 是红色错误。它们都返回行号；传入行号的重载会改写这一行。`GM.Echo` 同样有这两个重载。GM 页文本支持 Unity 的富文本标签，例如 `<b>`、`<i>`、`<color=#FFCC00>`。`Debug.Log` 只会进 Console 页，那边不解析这些标签。
