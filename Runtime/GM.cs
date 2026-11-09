@@ -144,7 +144,7 @@ namespace UniGM
 
                 if (!_commands.TryGetValue(commandName, out GMCommand command))
                 {
-                    Fail($"未找到命令 \"{commandName}\"。输入 help gm 查看全部命令。");
+                    Fail($"未找到命令 \"{commandName}\"。输入 help -gm 查看全部命令。");
                     return false;
                 }
 
@@ -351,7 +351,7 @@ namespace UniGM
 
                 if (matchedParsers.Count == 0)
                 {
-                    error = $"无法解析参数 \"{token}\"。输入 help arg 查看写法。";
+                    error = $"无法解析参数 \"{token}\"。输入 help -arg 查看写法。";
                     return false;
                 }
 

@@ -201,15 +201,15 @@ cube (1,9,0) (0,89,0)
 
 ## help
 
-只内置一条命令，名字是 `help`。`arg` 和 `gm` 是它的参数，用来指名要查类型还是命令，不走上面的类型解析器。
+只内置一条命令，名字是 `help`。`-arg` 和 `-gm` 是它的参数，用来指名要查类型还是命令，不走上面的类型解析器。
 
 | 输入 | 输出 |
 | --- | --- |
 | `help` | 同时列出全部参数写法和全部命令 |
-| `help arg` | 每个已注册解析器一行：类型名和 Hint |
-| `help arg TypeName` | 只输出这个类型的 Hint |
-| `help gm` | 每个已注册命令一行：名字和 Hint |
-| `help gm CommandName` | 只输出这条命令的 Hint |
+| `help -arg` | 每个已注册解析器一行：类型名和 Hint |
+| `help -arg TypeName` | 只输出这个类型的 Hint |
+| `help -gm` | 每个已注册命令一行：名字和 Hint |
+| `help -gm CommandName` | 只输出这条命令的 Hint |
 
 `TypeName` 忽略大小写，可以写 C# 关键字、短名或完整名，例如 `int`、`Int32`、`System.Int32`、`Vector3`、`UnityEngine.Vector3`。
 
@@ -265,7 +265,7 @@ GM.Register(new GmSampleTeamParser());
 GM.Unregister<GmSampleTeam>();
 ```
 
-`Template` 用来判断这段文本是不是你的类型；`TryParse` 成功时把装箱后的值放到 `argObj`。`Hint` 会在 `help arg` 里显示。
+`Template` 用来判断这段文本是不是你的类型；`TryParse` 成功时把装箱后的值放到 `argObj`。`Hint` 会在 `help -arg` 里显示。
 
 覆盖内置类型时，新模板如果和别的类型重叠，调度器会报告歧义，不会猜一个。
 
@@ -293,7 +293,7 @@ GM.Unregister<GmSampleTeam>();
 A: 确认启动流程调用了 `GM.Initialize`，并且传入的 `IGmInput` 能读到打开窗口、拖动和提交命令这几个快捷键。
 
 **Q: 参数一直解析失败？**  
-A: 输入 `help arg` 看写法。字符串必须是英文双引号；整数向量是 `i(1,2)` 这种形式，不是 `(1,2)`。
+A: 输入 `help -arg` 看写法。字符串必须是英文双引号；整数向量是 `i(1,2)` 这种形式，不是 `(1,2)`。
 
 **Q: `add 1.5 2` 不计算？**  
 A: `1.5` 会解析成 `float`，而示例命令 `add` 只要两个 `int`。无后缀整数才是 `int`，小数请带类型自己约定，或在命令里接受 `float`。

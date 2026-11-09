@@ -13,7 +13,7 @@ namespace UniGM
         public abstract string Name { get; }
 
         /// <summary>
-        /// 用法说明。由 <c>help gm</c> 显示。
+        /// 用法说明。由 <c>help -gm</c> 显示。
         /// </summary>
         public abstract string Hint { get; }
 

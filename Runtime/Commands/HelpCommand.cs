@@ -10,12 +10,12 @@ namespace UniGM
     {
         public override string Name => "help";
 
-        public override string Hint => "eg. help, help arg Vector3, help gm cube";
+        public override string Hint => "eg. help, help -arg Vector3, help -gm cube";
 
         internal const string UsageText =
             "eg. help\n" +
-            "eg. help arg Vector3\n" +
-            "eg. help gm cube";
+            "eg. help -arg Vector3\n" +
+            "eg. help -gm cube";
 
         public override void Execute(IReadOnlyList<object> args)
         {
@@ -30,7 +30,7 @@ namespace UniGM
             }
 
             string topic = args[0] as string ?? string.Empty;
-            if (topic.Equals("arg", StringComparison.OrdinalIgnoreCase))
+            if (topic.Equals("-arg", StringComparison.OrdinalIgnoreCase))
             {
                 if (args.Count == 1)
                     PrintArgs(null);
@@ -41,7 +41,7 @@ namespace UniGM
                 return;
             }
 
-            if (topic.Equals("gm", StringComparison.OrdinalIgnoreCase))
+            if (topic.Equals("-gm", StringComparison.OrdinalIgnoreCase))
             {
                 if (args.Count == 1)
                     PrintCommands(null);
@@ -82,7 +82,7 @@ namespace UniGM
             List<IArgParser> found = GM.FindParsers(typeName);
             if (found.Count == 0)
             {
-                GM.Fail($"未注册类型 \"{typeName}\"。输入 help arg 查看全部类型。");
+                GM.Fail($"未注册类型 \"{typeName}\"。输入 help -arg 查看全部类型。");
                 return;
             }
 
@@ -118,7 +118,7 @@ namespace UniGM
 
             if (!GM.TryGetCommand(commandName, out GMCommand command))
             {
-                GM.Fail($"未注册命令 \"{commandName}\"。输入 help gm 查看全部命令。");
+                GM.Fail($"未注册命令 \"{commandName}\"。输入 help -gm 查看全部命令。");
                 return;
             }
 
@@ -129,8 +129,8 @@ namespace UniGM
         {
             GM.Fail("用法:");
             GM.Fail("  help");
-            GM.Fail("  help arg [TypeName]");
-            GM.Fail("  help gm [CommandName]");
+            GM.Fail("  help -arg [TypeName]");
+            GM.Fail("  help -gm [CommandName]");
         }
     }
 }

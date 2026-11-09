@@ -31,7 +31,7 @@ namespace UniGM
         public abstract Regex Template { get; }
 
         /// <summary>
-        /// 这种类型在命令行里怎么写。由 <c>help arg</c> 显示。
+        /// 这种类型在命令行里怎么写。由 <c>help -arg</c> 显示。
         /// </summary>
         public abstract string Hint { get; }
 
