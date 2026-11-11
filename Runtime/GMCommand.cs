@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 
 namespace UniGM
@@ -18,18 +19,27 @@ namespace UniGM
         public abstract string Hint { get; }
 
         /// <summary>
-        /// 本次执行从命令行解析出的参数。在 <see cref="Execute"/> 之前写入。
+        /// 为 true 时，GM 控制台还没有任何输出时显示 <see cref="Hint"/>。help 总会显示，并且排在最前。
         /// </summary>
-        public List<object> Args { get; private set; } = new List<object>();
+        public virtual bool DisplayUsage => false;
 
         /// <summary>
-        /// 执行命令。<paramref name="args"/> 与 <see cref="Args"/> 是同一个列表。
+        /// 本次执行从命令行解析出的只读参数字典。在 <see cref="Execute"/> 之前写入。
+        /// 命令名对应按输入顺序排列的全部参数。选项名没有参数时为 <c>null</c>，只有一个参数时为该对象，有多个参数时为 <c>List&lt;object&gt;</c>。
         /// </summary>
-        public abstract void Execute(IReadOnlyList<object> args);
+        public IReadOnlyDictionary<string, object> Args { get; private set; } = EmptyArgs;
 
-        internal void SetArgs(List<object> args)
+        /// <summary>
+        /// 执行命令。<paramref name="args"/> 与 <see cref="Args"/> 是同一个只读字典。
+        /// </summary>
+        public abstract void Execute(IReadOnlyDictionary<string, object> args);
+
+        internal void SetArgs(IReadOnlyDictionary<string, object> args)
         {
-            Args = args ?? new List<object>();
+            Args = args ?? EmptyArgs;
         }
+
+        private static readonly IReadOnlyDictionary<string, object> EmptyArgs =
+            new Dictionary<string, object>(StringComparer.OrdinalIgnoreCase);
     }
 }

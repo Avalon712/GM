@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Text.RegularExpressions;
 
 namespace UniGM
@@ -11,6 +12,9 @@ namespace UniGM
     {
         private static readonly Dictionary<string, GMCommand> _commands =
             new Dictionary<string, GMCommand>(StringComparer.OrdinalIgnoreCase);
+
+        private static readonly List<GMCommand> _commandOrder = new List<GMCommand>();
+        private static int _registrationVersion;
 
         private static readonly Dictionary<Type, IArgParser> _parsers = new Dictionary<Type, IArgParser>();
 
@@ -80,6 +84,12 @@ namespace UniGM
                 return false;
             }
 
+            if (command.Name[0] == '-')
+            {
+                Fail("命令名不能以 - 开头。");
+                return false;
+            }
+
             if (_commands.ContainsKey(command.Name))
             {
                 Fail($"命令 \"{command.Name}\" 已存在。请先 Unregister 再注册。");
@@ -87,6 +97,8 @@ namespace UniGM
             }
 
             _commands.Add(command.Name, command);
+            _commandOrder.Add(command);
+            _registrationVersion++;
             return true;
         }
 
@@ -95,10 +107,13 @@ namespace UniGM
         /// </summary>
         public static bool Unregister(string name)
         {
-            if (string.IsNullOrWhiteSpace(name))
+            if (string.IsNullOrWhiteSpace(name) || !_commands.TryGetValue(name, out GMCommand command))
                 return false;
 
-            return _commands.Remove(name);
+            _commands.Remove(name);
+            _commandOrder.Remove(command);
+            _registrationVersion++;
+            return true;
         }
 
         /// <summary>
@@ -148,20 +163,14 @@ namespace UniGM
                     return false;
                 }
 
-                List<object> values = new List<object>(tokens.Count);
-                if (command is HelpCommand)
-                {
-                    for (int i = 0; i < tokens.Count; i++)
-                        values.Add(tokens[i]);
-                }
-                else if (!TryBind(tokens, values, out error))
+                if (!TryBuildArgs(command, tokens, out IReadOnlyDictionary<string, object> args, out error))
                 {
                     Fail(error);
                     return false;
                 }
 
-                command.SetArgs(values);
-                command.Execute(values);
+                command.SetArgs(args);
+                command.Execute(args);
                 return true;
             }
             catch (Exception exception)
@@ -273,6 +282,32 @@ namespace UniGM
             return type.Name;
         }
 
+        internal static int RegistrationVersion => _registrationVersion;
+
+        internal static void CopyUsageCommands(List<GMCommand> destination)
+        {
+            if (destination == null)
+                return;
+
+            destination.Clear();
+            GMCommand help = null;
+            for (int i = 0; i < _commandOrder.Count; i++)
+            {
+                GMCommand command = _commandOrder[i];
+                if (command is HelpCommand)
+                {
+                    help = command;
+                    continue;
+                }
+
+                if (command.DisplayUsage)
+                    destination.Add(command);
+            }
+
+            if (help != null)
+                destination.Insert(0, help);
+        }
+
         internal static List<GMCommand> CopyCommands()
         {
             List<GMCommand> list = new List<GMCommand>(_commands.Values);
@@ -325,6 +360,7 @@ namespace UniGM
             Register(new BoolArgParser());
             Register(new CharArgParser());
             Register(new StringArgParser());
+            Register(new OptionArgParser());
             Register(new Vector2ArgParser());
             Register(new Vector3ArgParser());
             Register(new Vector4ArgParser());
@@ -334,41 +370,89 @@ namespace UniGM
             Register(new ColorArgParser());
             Register(new RectArgParser());
             Register(new HelpCommand());
+            Register(new ClearCommand());
         }
 
-        private static bool TryBind(List<string> tokens, List<object> values, out string error)
+        private static bool TryBuildArgs(GMCommand command, List<string> tokens, out IReadOnlyDictionary<string, object> args, out string error)
         {
+            List<object> ordered = new List<object>(tokens.Count);
+            Dictionary<string, object> map = new Dictionary<string, object>(StringComparer.OrdinalIgnoreCase);
+
             for (int i = 0; i < tokens.Count; i++)
             {
-                string token = tokens[i];
-                List<IArgParser> matchedParsers = new List<IArgParser>(2);
-                foreach (IArgParser parser in _parsers.Values)
+                if (!TryParseToken(tokens[i], out object value, out error))
                 {
-                    Regex template = parser.Template;
-                    if (template != null && template.IsMatch(token))
-                        matchedParsers.Add(parser);
-                }
-
-                if (matchedParsers.Count == 0)
-                {
-                    error = $"无法解析参数 \"{token}\"。输入 help -arg 查看写法。";
+                    args = null;
                     return false;
                 }
 
-                if (matchedParsers.Count > 1)
+                if (value is GmOption option)
                 {
-                    error = $"参数 \"{token}\" 同时匹配 {JoinNames(matchedParsers)}。";
-                    return false;
+                    ordered.Add(option);
+                    List<object> optionValues = new List<object>();
+                    while (i + 1 < tokens.Count)
+                    {
+                        if (!TryParseToken(tokens[i + 1], out object next, out error))
+                        {
+                            args = null;
+                            return false;
+                        }
+
+                        if (next is GmOption)
+                            break;
+
+                        i++;
+                        optionValues.Add(next);
+                        ordered.Add(next);
+                    }
+
+                    if (optionValues.Count == 0)
+                        map[option.Token] = null;
+                    else if (optionValues.Count == 1)
+                        map[option.Token] = optionValues[0];
+                    else
+                        map[option.Token] = optionValues;
+                    continue;
                 }
 
-                IArgParser matched = matchedParsers[0];
-                if (!matched.TryParse(token, out object value))
-                {
-                    error = $"参数 \"{token}\" 不能按 {DisplayName(matched.ArgType)} 解析。{matched.Hint}";
-                    return false;
-                }
+                ordered.Add(value);
+            }
 
-                values.Add(value);
+            map[command.Name] = ordered;
+            args = new ReadOnlyDictionary<string, object>(map);
+            error = null;
+            return true;
+        }
+
+        private static bool TryParseToken(string token, out object value, out string error)
+        {
+            List<IArgParser> matchedParsers = new List<IArgParser>(2);
+            foreach (IArgParser parser in _parsers.Values)
+            {
+                Regex template = parser.Template;
+                if (template != null && template.IsMatch(token))
+                    matchedParsers.Add(parser);
+            }
+
+            if (matchedParsers.Count == 0)
+            {
+                value = null;
+                error = $"无法解析参数 \"{token}\"。输入 help -arg 查看写法。";
+                return false;
+            }
+
+            if (matchedParsers.Count > 1)
+            {
+                value = null;
+                error = $"参数 \"{token}\" 同时匹配 {JoinNames(matchedParsers)}。";
+                return false;
+            }
+
+            IArgParser matched = matchedParsers[0];
+            if (!matched.TryParse(token, out value))
+            {
+                error = $"参数 \"{token}\" 不能按 {DisplayName(matched.ArgType)} 解析。{matched.Hint}";
+                return false;
             }
 
             error = null;

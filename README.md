@@ -1,4 +1,4 @@
-# GM
+# UniGM
 
 运行时 GM 管理器。在游戏里用 Unity 遗产 GUI（IMGUI）查看 Debug 输出，并执行已注册的 GM 命令。Debug 日志和命令输出分开展示。
 
@@ -103,7 +103,7 @@ public sealed class MyGmInput : IGmInput
 | 页签 | 内容 |
 | --- | --- |
 | **Console** | `Debug.Log` / `LogWarning` / `LogError`。可按 Info、Warning、Error 过滤，正则搜索、折叠、清空。点击一行后，下方单独的面板显示完整内容和堆栈 |
-| **GM** | 命令行风格，和 Console 分开。命令回显、`GM.Print`、解析错误和异常都在这里。底部输入命令，Enter 执行，↑↓ 翻历史。编辑器里会把命令历史写成 `persistentDataPath/UniGM/command-history.bin`，初始化时读回，退出 Play 时写回。工具栏的「清历史」会清掉这些记录并删除该文件。还没有任何输出时，会显示 `help` 的用法 |
+| **GM** | 命令行风格，和 Console 分开。命令回显、`GM.Print`、解析错误和异常都在这里。底部输入命令，Enter 执行，↑↓ 翻历史。编辑器里会把命令历史写成 `persistentDataPath/UniGM/command-history.bin`，初始化时读回，退出 Play 时写回。工具栏的「清历史」会清掉这些记录并删除该文件。还没有任何输出时，先显示 `help` 的 Hint，再按注册顺序显示 `DisplayUsage` 为 true 的命令 Hint |
 | **性能** | 最近 1 秒的平均帧率、帧时间，以及最近 1000 帧的 1% Low、0.1% Low。内存只在 GM 窗口打开时读取：打开时立即刷新，之后每 10 秒一次 |
 
 命令想显示在 GM 页，调用 `GM.Print`。`GM.Warn` 是黄色警告，`GM.Error` 是红色错误。它们都返回行号；传入行号的重载会改写这一行。`GM.Echo` 同样有这两个重载。GM 页文本支持 Unity 的富文本标签，例如 `<b>`、`<i>`、`<color=#FFCC00>`。`Debug.Log` 只会进 Console 页，那边不解析这些标签。
@@ -127,28 +127,31 @@ public sealed class CubeCommand : GMCommand
 
     public override string Hint => "eg. cube (1,9,0) (0,89,0)";
 
-    public override void Execute(IReadOnlyList<object> args)
+    public override void Execute(IReadOnlyDictionary<string, object> args)
     {
-        if (args.Count != 2 || !(args[0] is Vector3) || !(args[1] is Vector3))
+        var all = args[Name] as List<object>;
+        if (all == null || all.Count != 2 || !(all[0] is Vector3) || !(all[1] is Vector3))
         {
             GM.Print(Hint);
             return;
         }
 
-        GM.Print("位置 " + (Vector3)args[0] + "    欧拉角 " + (Vector3)args[1]);
+        GM.Print("位置 " + (Vector3)all[0] + "    欧拉角 " + (Vector3)all[1]);
     }
 }
 
 GM.Register(new CubeCommand());
 ```
 
-执行时，调度器会先把参数解析好，写进 `Args`，再调用 `Execute`。`Execute` 收到的列表和 `Args` 是同一个。
+执行时，调度器把这一行放进只读字典，写进 `Args`，再调用 `Execute`。两者是同一个字典。键是命令名时，值是按输入顺序排列的 `List<object>`，里面每一项都是解析后的值，选项是 `GmOption`。键是选项原文（例如 `-gm`）时，后面没有参数则为 `null`，只有一个参数时就是那个对象，有多个参数时是 `List<object>`。下一段遇到新的选项为止，都算当前选项的参数。
 
 ```csharp
 GM.Unregister("cube");
 ```
 
-名称比较忽略大小写。命令名不能包含空白。
+名称比较忽略大小写。命令名不能包含空白，也不能以 `-` 开头。
+
+`DisplayUsage` 默认为 false。设为 true 后，GM 控制台还没有任何输出时会显示这条命令的 `Hint`。`help` 总会显示，并且排在最前，其余命令按注册顺序排列。
 
 ---
 
@@ -161,6 +164,8 @@ cube (1,9,0) (0,89,0)
 ```
 
 上面会得到两个 `Vector3`。括号里面和英文双引号里面的空格不会把参数切开，所以 `(1, 9, 0)` 和 `"hello world"` 都是一段参数。
+
+选项由内置的 `GmOption` 解析器识别，例如 `-gm`、`--file`。它和 `int`、`string` 一样，只是一种参数类型。选项后面连续的参数都归这个选项，直到下一段是新的选项。没有参数时字典里的值是 `null`；只有一个参数时就是那个对象；有多个参数时是 `List<object>`。这些参数仍走各自的解析器。`-3`、`-1.5` 这种负数仍由数字解析器处理。同一个选项出现多次时，字典保留最后一次的值，命令名下的列表仍按输入顺序保留全部内容。
 
 字符串里的转义：`\\`、`\"`、`\n`、`\t`。
 
@@ -184,6 +189,7 @@ cube (1,9,0) (0,89,0)
 | `bool` | `true`、`false` |
 | `char` | `'a'`、`'\n'`、`'\t'` |
 | `string` | `"hello"`、`"say \"hi\""` |
+| `GmOption` | `-gm`、`--file`。`-3` 不是选项 |
 | `Vector2` | `(1,2)`、`(1.5, -2)` |
 | `Vector3` | `(1,9,0)` |
 | `Vector4` | `(1,0,0,1)` |
@@ -201,19 +207,21 @@ cube (1,9,0) (0,89,0)
 
 ## help
 
-只内置一条命令，名字是 `help`。`-arg` 和 `-gm` 是它的参数，用来指名要查类型还是命令，不走上面的类型解析器。
+`help` 是内置命令，参数和别的命令走同一套解析器。`-arg`、`-gm` 是 `GmOption`。不写后面的参数就列出全部；要指定名字时，名字是字符串，需要英文双引号。
 
 | 输入 | 输出 |
 | --- | --- |
 | `help` | 同时列出全部参数写法和全部命令 |
 | `help -arg` | 每个已注册解析器一行：类型名和 Hint |
-| `help -arg TypeName` | 只输出这个类型的 Hint |
+| `help -arg "TypeName"` | 只输出这个类型的 Hint |
 | `help -gm` | 每个已注册命令一行：名字和 Hint |
-| `help -gm CommandName` | 只输出这条命令的 Hint |
+| `help -gm "CommandName"` | 只输出这条命令的 Hint |
 
-`TypeName` 忽略大小写，可以写 C# 关键字、短名或完整名，例如 `int`、`Int32`、`System.Int32`、`Vector3`、`UnityEngine.Vector3`。
+`TypeName` 忽略大小写，可以写 C# 关键字、短名或完整名，例如 `"int"`、`"Int32"`、`"System.Int32"`、`"Vector3"`、`"UnityEngine.Vector3"`。
 
 找不到类型或命令时，GM 页会提示。其它写法会打印上面的用法。
+
+内置命令还有 `clear`。它清空 GM 页已经输出的内容，效果和工具栏的「清空」相同。
 
 ---
 

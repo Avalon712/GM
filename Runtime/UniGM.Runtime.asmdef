@@ -1,5 +1,5 @@
 {
-    "name": "GM.Runtime",
+    "name": "UniGM.Runtime",
     "rootNamespace": "UniGM",
     "references": [],
     "includePlatforms": [],

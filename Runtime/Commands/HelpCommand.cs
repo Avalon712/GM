@@ -4,55 +4,84 @@ using System.Collections.Generic;
 namespace UniGM
 {
     /// <summary>
-    /// 内置帮助命令。参数是关键字，不经过类型解析器。
+    /// 内置帮助命令。选项和参数都走统一的解析器。
     /// </summary>
     public sealed class HelpCommand : GMCommand
     {
         public override string Name => "help";
 
-        public override string Hint => "eg. help, help -arg Vector3, help -gm cube";
+        public override string Hint => "eg. help, help -arg \"Vector3\", help -gm \"cube\"";
 
-        internal const string UsageText =
-            "eg. help\n" +
-            "eg. help -arg Vector3\n" +
-            "eg. help -gm cube";
-
-        public override void Execute(IReadOnlyList<object> args)
+        public override void Execute(IReadOnlyDictionary<string, object> args)
         {
-            if (args == null || args.Count == 0)
+            if (args == null || !args.TryGetValue(Name, out object packed) || !(packed is List<object> all))
             {
-                GM.Print("参数");
-                PrintArgs(null);
-                GM.Print(string.Empty);
-                GM.Print("命令");
-                PrintCommands(null);
+                PrintUsage();
                 return;
             }
 
-            string topic = args[0] as string ?? string.Empty;
-            if (topic.Equals("-arg", StringComparison.OrdinalIgnoreCase))
+            bool hasArg = args.TryGetValue("-arg", out object argValue);
+            bool hasGm = args.TryGetValue("-gm", out object gmValue);
+            if (!hasArg && !hasGm)
             {
-                if (args.Count == 1)
+                if (all.Count == 0)
+                {
+                    GM.Print("参数");
                     PrintArgs(null);
-                else if (args.Count == 2)
-                    PrintArgs(args[1] as string ?? string.Empty);
-                else
-                    PrintUsage();
-                return;
-            }
-
-            if (topic.Equals("-gm", StringComparison.OrdinalIgnoreCase))
-            {
-                if (args.Count == 1)
+                    GM.Print(string.Empty);
+                    GM.Print("命令");
                     PrintCommands(null);
-                else if (args.Count == 2)
-                    PrintCommands(args[1] as string ?? string.Empty);
-                else
-                    PrintUsage();
+                    return;
+                }
+
+                PrintUsage();
                 return;
             }
 
-            PrintUsage();
+            if (!MatchesShape(args, all))
+            {
+                PrintUsage();
+                return;
+            }
+
+            if (hasArg && argValue != null && !(argValue is string))
+            {
+                PrintUsage();
+                return;
+            }
+
+            if (hasGm && gmValue != null && !(gmValue is string))
+            {
+                PrintUsage();
+                return;
+            }
+
+            if (hasArg)
+                PrintArgs(argValue as string);
+            if (hasGm)
+                PrintCommands(gmValue as string);
+        }
+
+        private bool MatchesShape(IReadOnlyDictionary<string, object> args, List<object> all)
+        {
+            int expected = 0;
+            foreach (KeyValuePair<string, object> pair in args)
+            {
+                if (pair.Key.Equals(Name, StringComparison.OrdinalIgnoreCase))
+                    continue;
+
+                if (!pair.Key.Equals("-arg", StringComparison.OrdinalIgnoreCase)
+                    && !pair.Key.Equals("-gm", StringComparison.OrdinalIgnoreCase))
+                    return false;
+
+                expected++;
+                if (pair.Value is List<object> many)
+                    expected += many.Count;
+                else if (pair.Value != null)
+                    expected++;
+            }
+
+            return all.Count == expected;
         }
 
         private static void PrintArgs(string typeName)
@@ -129,8 +158,8 @@ namespace UniGM
         {
             GM.Fail("用法:");
             GM.Fail("  help");
-            GM.Fail("  help -arg [TypeName]");
-            GM.Fail("  help -gm [CommandName]");
+            GM.Fail("  help -arg [\"TypeName\"]");
+            GM.Fail("  help -gm [\"CommandName\"]");
         }
     }
 }
