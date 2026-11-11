@@ -10,7 +10,14 @@ namespace UniGM
     {
         public override string Name => "help";
 
-        public override string Hint => "eg. help, help -arg \"Vector3\", help -gm \"cube\"";
+        private const string Usage =
+            "help #同时列出参数写法和全部命令。\n" +
+            "help -arg #列出全部参数类型。\n" +
+            "help -arg [TypeName...] #查询一个到所有的参数类型。\n" +
+            "help -gm #列出全部命令。\n" +
+            "help -gm [CmdName...] #查询一个到所有的注册命令。";
+
+        public override string Hint => Usage;
 
         public override void Execute(IReadOnlyDictionary<string, object> args)
         {
@@ -44,22 +51,51 @@ namespace UniGM
                 return;
             }
 
-            if (hasArg && argValue != null && !(argValue is string))
+            List<string> argNames = null;
+            List<string> commandNames = null;
+            if (hasArg && !TryReadNames(argValue, out argNames))
             {
                 PrintUsage();
                 return;
             }
 
-            if (hasGm && gmValue != null && !(gmValue is string))
+            if (hasGm && !TryReadNames(gmValue, out commandNames))
             {
                 PrintUsage();
                 return;
             }
 
             if (hasArg)
-                PrintArgs(argValue as string);
+                PrintArgs(argValue == null ? null : argNames);
             if (hasGm)
-                PrintCommands(gmValue as string);
+                PrintCommands(gmValue == null ? null : commandNames);
+        }
+
+        private static bool TryReadNames(object value, out List<string> names)
+        {
+            names = null;
+            if (value == null)
+                return true;
+
+            if (value is string one)
+            {
+                names = new List<string> { one };
+                return true;
+            }
+
+            if (!(value is List<object> many))
+                return false;
+
+            names = new List<string>(many.Count);
+            for (int i = 0; i < many.Count; i++)
+            {
+                if (!(many[i] is string text))
+                    return false;
+
+                names.Add(text);
+            }
+
+            return true;
         }
 
         private bool MatchesShape(IReadOnlyDictionary<string, object> args, List<object> all)
@@ -84,9 +120,9 @@ namespace UniGM
             return all.Count == expected;
         }
 
-        private static void PrintArgs(string typeName)
+        private static void PrintArgs(List<string> typeNames)
         {
-            if (typeName == null)
+            if (typeNames == null)
             {
                 List<IArgParser> parsers = GM.CopyParsers();
                 if (parsers.Count == 0)
@@ -108,6 +144,12 @@ namespace UniGM
                 return;
             }
 
+            for (int n = 0; n < typeNames.Count; n++)
+                PrintArg(typeNames[n]);
+        }
+
+        private static void PrintArg(string typeName)
+        {
             List<IArgParser> found = GM.FindParsers(typeName);
             if (found.Count == 0)
             {
@@ -124,9 +166,9 @@ namespace UniGM
             GM.Print(found[0].Hint);
         }
 
-        private static void PrintCommands(string commandName)
+        private static void PrintCommands(List<string> commandNames)
         {
-            if (commandName == null)
+            if (commandNames == null)
             {
                 List<GMCommand> commands = GM.CopyCommands();
                 if (commands.Count == 0)
@@ -135,31 +177,50 @@ namespace UniGM
                     return;
                 }
 
-                int width = 0;
                 for (int i = 0; i < commands.Count; i++)
-                    width = Math.Max(width, commands[i].Name.Length);
-
-                for (int i = 0; i < commands.Count; i++)
-                    GM.Print(commands[i].Name.PadRight(width + 2) + commands[i].Hint);
+                    PrintHint(commands[i]);
 
                 return;
             }
 
-            if (!GM.TryGetCommand(commandName, out GMCommand command))
+            for (int i = 0; i < commandNames.Count; i++)
             {
-                GM.Fail($"未注册命令 \"{commandName}\"。输入 help -gm 查看全部命令。");
-                return;
+                if (!GM.TryGetCommand(commandNames[i], out GMCommand command))
+                {
+                    GM.Fail($"未注册命令 \"{commandNames[i]}\"。输入 help -gm 查看全部命令。");
+                    continue;
+                }
+
+                PrintHint(command);
+            }
+        }
+
+        private static void PrintHint(GMCommand command)
+        {
+            string hint = command.Hint ?? string.Empty;
+            string[] lines = hint.Split('\n');
+            bool any = false;
+            for (int i = 0; i < lines.Length; i++)
+            {
+                if (lines[i].Length == 0)
+                    continue;
+
+                any = true;
+                GM.Print(lines[i]);
             }
 
-            GM.Print(command.Hint);
+            if (!any)
+                GM.Print(command.Name);
         }
 
         private static void PrintUsage()
         {
-            GM.Fail("用法:");
-            GM.Fail("  help");
-            GM.Fail("  help -arg [\"TypeName\"]");
-            GM.Fail("  help -gm [\"CommandName\"]");
+            string[] lines = Usage.Split('\n');
+            for (int i = 0; i < lines.Length; i++)
+            {
+                if (lines[i].Length > 0)
+                    GM.Fail(lines[i]);
+            }
         }
     }
 }

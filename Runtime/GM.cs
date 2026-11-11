@@ -15,6 +15,7 @@ namespace UniGM
 
         private static readonly List<GMCommand> _commandOrder = new List<GMCommand>();
         private static int _registrationVersion;
+        private static bool _clearHistoryRequested;
 
         private static readonly Dictionary<Type, IArgParser> _parsers = new Dictionary<Type, IArgParser>();
 
@@ -257,6 +258,20 @@ namespace UniGM
         internal static void ClearOutput()
         {
             GmOutput.Clear();
+        }
+
+        internal static void RequestClearHistory()
+        {
+            _clearHistoryRequested = true;
+        }
+
+        internal static bool ConsumeClearHistory()
+        {
+            if (!_clearHistoryRequested)
+                return false;
+
+            _clearHistoryRequested = false;
+            return true;
         }
 
         internal static int OutputVersion => GmOutput.Version;
