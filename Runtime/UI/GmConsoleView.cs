@@ -12,6 +12,7 @@ namespace UniGM
         private readonly List<GMCommand> _usage = new List<GMCommand>();
         private readonly List<string> _usageLines = new List<string>();
         private readonly List<float> _usageLineHeights = new List<float>();
+        private readonly List<bool> _usageBold = new List<bool>();
         private readonly GUIContent _content = new GUIContent();
 
         private Vector2 _scroll;
@@ -251,13 +252,14 @@ namespace UniGM
         {
             float y = skin.Px(4);
             float textWidth = width - skin.Px(6);
-            skin.Cmd.fontStyle = FontStyle.Normal;
-            skin.Cmd.normal.textColor = skin.CmdText;
             for (int i = 0; i < _usageLines.Count; i++)
             {
+                bool title = _usageBold[i];
+                skin.Cmd.fontStyle = title ? FontStyle.Bold : FontStyle.Normal;
+                skin.Cmd.normal.textColor = title ? skin.CmdEcho : skin.CmdText;
                 _content.text = _usageLines[i];
                 GUI.Label(new Rect(skin.Px(2), y, textWidth, _usageLineHeights[i]), _content, skin.Cmd);
-                y += _usageLineHeights[i] + skin.Px(2);
+                y += _usageLineHeights[i] + skin.Px(title ? 4 : 2);
             }
         }
 
@@ -281,10 +283,19 @@ namespace UniGM
                 GM.CopyUsageCommands(_usage);
                 _usageLines.Clear();
                 _usageLineHeights.Clear();
-                skin.Cmd.fontStyle = FontStyle.Normal;
+                _usageBold.Clear();
                 float usageTop = skin.Px(4);
                 for (int i = 0; i < _usage.Count; i++)
                 {
+                    skin.Cmd.fontStyle = FontStyle.Bold;
+                    _content.text = _usage[i].Name;
+                    float nameHeight = Mathf.Max(skin.Px(18), skin.Cmd.CalcHeight(_content, textWidth));
+                    _usageLines.Add(_usage[i].Name);
+                    _usageLineHeights.Add(nameHeight);
+                    _usageBold.Add(true);
+                    usageTop += nameHeight + skin.Px(4);
+
+                    skin.Cmd.fontStyle = FontStyle.Normal;
                     string hint = _usage[i].Hint ?? string.Empty;
                     string[] lines = hint.Split('\n');
                     for (int n = 0; n < lines.Length; n++)
@@ -297,6 +308,7 @@ namespace UniGM
                         float lineHeight = Mathf.Max(skin.Px(18), skin.Cmd.CalcHeight(_content, textWidth));
                         _usageLines.Add(shown);
                         _usageLineHeights.Add(lineHeight);
+                        _usageBold.Add(false);
                         usageTop += lineHeight + skin.Px(2);
                     }
 
